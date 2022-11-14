@@ -1,5 +1,7 @@
 
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'screen/dashboard/MyNavigationBar.dart';
 import 'package:sizer/sizer.dart';
@@ -26,16 +28,14 @@ class MyApp extends StatelessWidget {
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
                         color: Colors.black),
-                 //   systemOverlayStyle: Platform.isAndroid
-                    //   ? const SystemUiOverlayStyle(
-                    //  statusBarColor: Colors.black,
-                    //  statusBarBrightness: Brightness.light,
-                     // statusBarIconBrightness: Brightness.light,
-                      //systemNavigationBarIconBrightness: Brightness.light,
-                    //) : SystemUiOverlayStyle.light),
+                   systemOverlayStyle: Platform.isAndroid
+                      ? const SystemUiOverlayStyle(
+                     statusBarColor: Colors.black,
+                     statusBarBrightness: Brightness.light,
+                     statusBarIconBrightness: Brightness.light,
+                      systemNavigationBarIconBrightness: Brightness.light,
+                    ) : SystemUiOverlayStyle.light),
                 ),
-                primarySwatch: Colors.grey,
-              ),
             home: MyNavigationBar(),
         );
       }

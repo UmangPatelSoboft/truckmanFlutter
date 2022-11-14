@@ -84,22 +84,18 @@ class HomeScreen extends StatelessWidget {
                       Row(
                         crossAxisAlignment:  CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            child: Text("Vahicle Type :",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  color: Colors.black,
-                                )),
-                          ),
-                          Container(
-                            child: Text(" 132 feet Open Truck",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  color: Colors.black54,
-                                )),
-                          )
+                          Text("Vahicle Type :",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                color: Colors.black,
+                              )),
+                          Text(" 132 feet Open Truck",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                color: Colors.black54,
+                              ))
                         ],
                       ),
                       Container(
