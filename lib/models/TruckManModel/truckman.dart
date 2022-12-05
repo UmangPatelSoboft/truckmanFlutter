@@ -34,7 +34,7 @@ class TruckMan {
   String deviceToken;
   String deviceType;
   String uDID;
-  String? iMEI;
+  String iMEI;
   int? oTP;
   bool? isSignup;
   String? tDSStr;
@@ -84,7 +84,7 @@ class TruckMan {
         required this.deviceToken,
         required this.deviceType,
         required this.uDID,
-        this.iMEI,
+        required this.iMEI,
         this.oTP,
         this.isSignup,
         this.tDSStr,

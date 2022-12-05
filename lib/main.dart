@@ -1,10 +1,13 @@
-import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:otp_text_field/otp_field_style.dart';
 import 'package:otp_text_field/style.dart';
 import 'package:truckman/CustomTextStyle.dart';
 import 'package:truckman/SignUpScreen.dart';
+import 'package:truckman/models/TruckManModel/truckManVerifyOtp.dart';
+import 'package:truckman/models/TruckManModel/truckManVerifyOtpResponse.dart';
 import 'package:truckman/models/TruckManModel/truckman.dart';
 import 'package:truckman/models/TruckManModel/truckmanResponse.dart';
 import 'package:truckman/utils/dio_client.dart';
@@ -62,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   //to change widget
   bool? isTruckManLoginSubmit;
-  TruckManResponse? retrievedTruckManResponse;
+  TruckManResponse? retrivedTruckMane;
 
 //for tab bar selection
   int selectedTabIndex = 0;
@@ -87,6 +90,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   //button pressed text changed
   bool login = false;
   bool confirm = false;
+
+  var Otp = String;
 
   @override
   void initState() {
@@ -217,64 +222,101 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 ? Text("Confirm", style: CustomTextStyle.textBold16White)
                 : Text("Login", style: CustomTextStyle.textBold16White),
             onPressed: () async {
-                if (confirm != true) {
-                  if (mnumberformKey.currentState!.validate() ||
-                      _mnumberController.text.length == 10) {
-                    if (valuefirst != true) {
-                      if (showErrorMessage = true) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text('Accept terms and condition',
-                              style: CustomTextStyle.textNormal16Black),
-                          duration: const Duration(seconds: 3),
-                          backgroundColor: ColorSelect.tabcolorBg,
-                        ));
-                      }
-                    } else if (_mnumberController.text != '') {
-                      TruckMan truckManSignIn = TruckMan(
-                          mobileNumber: _mnumberController.text,
-                          deviceToken: "String",
-                          deviceType: "String",
-                          uDID: "String",);
-                      TruckManResponse? retrivedTruckMane =
-                      await _client.TruckMan_SignIn(truckManSignIn);
-                      //  isTruckManLoginSubmit = true;
-                      if (retrivedTruckMane != null) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(retrivedTruckMane.message.toString(),
-                              style: CustomTextStyle.textNormal16Black),
-                          duration: const Duration(seconds: 3),
-                          backgroundColor: ColorSelect.tabcolorBg,
-                        ));
-                      }
-                      login = !login;
-                      confirm = !confirm;
-                      isTruckManLoginSubmit = true;
-                      setState(() => showErrorMessage = false);
+              if (confirm != true) {
+                if (mnumberformKey.currentState!.validate() ||
+                    _mnumberController.text.length == 10) {
+                  if (valuefirst != true) {
+                    if (showErrorMessage = true) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Accept terms and condition',
+                            style: CustomTextStyle.textNormal16Black),
+                        duration: const Duration(seconds: 3),
+                        backgroundColor: ColorSelect.tabcolorBg,
+                      ));
                     }
-                    // isTruckManLoginSubmit = true;
                   }
-                }  else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignUp()),
-                  );
+                  else if (_mnumberController.text != '') {
+                    TruckMan truckManSignIn = TruckMan(
+                        mobileNumber: _mnumberController.text,
+                        deviceToken: "String",
+                        deviceType: "String",
+                        uDID: "String",
+                        iMEI: "String");
+                    retrivedTruckMane =
+                    await _client.TruckMan_SignIn(truckManSignIn);
+                    //  isTruckManLoginSubmit = true;
+                    if (retrivedTruckMane != null || retrivedTruckMane == 200) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(retrivedTruckMane!.message.toString(),
+                            style: CustomTextStyle.textNormal16Black),
+                        duration: const Duration(seconds: 3),
+                        backgroundColor: ColorSelect.tabcolorBg,
+                      ));
+                    }
+                    login = !login;
+                    confirm = !confirm;
+                    isTruckManLoginSubmit = true;
+                    setState(() => showErrorMessage = false);
+                  }
+                  // isTruckManLoginSubmit = true;
                 }
-              // if(otpnumberformKey.currentState!.validate()){
-              //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              //     content: Text('invalid',
-              //         style: CustomTextStyle.textNormal16Black),
-              //     duration: const Duration(seconds: 3),
-              //     backgroundColor: ColorSelect.tabcolorBg,
-              //   ));
-              // }else{
-              //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              //     content: Text('Validate',
-              //         style: CustomTextStyle.textNormal16Black),
-              //     duration: const Duration(seconds: 3),
-              //     backgroundColor: ColorSelect.tabcolorBg,
-              //   ));
-              // }
-              //  }
+              }
+              else {
+                retrivedTruckMane?.truckMan?.oTP?.toInt();
+                Fluttertoast.showToast(
+                    msg: retrivedTruckMane.toString(),
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0
+                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => const SignUp()),
+                // );
+              }
+            //   if(otpnumberformKey.currentState!.validate()) {
+            //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            //       content: Text('invalid',
+            //           style: CustomTextStyle.textNormal16Black),
+            //       duration: const Duration(seconds: 3),
+            //       backgroundColor: ColorSelect.tabcolorBg,
+            //     ));
+            //     truckManVerifyOtp? truckManOtp;
+            //   if(_otpController == null) {
+            //     truckManOtp = truckManVerifyOtp(
+            //         mobileNumber: _mnumberController.text,
+            //         deviceToken: "String",
+            //         deviceType: "String",
+            //         uDID: "String",
+            //         iMEI: "String",
+            //         oTP: 0
+            //         );
+            //     truckManVerifyOtpResponse? retrivedOtp =
+            //     await _client.TruckMan_VerifyOtp(truckManOtp);
+            //     if (retrivedOtp != null) {
+            //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            //         content: Text(retrivedOtp!.message.toString(),
+            //             style: CustomTextStyle.textNormal16Black),
+            //         duration: const Duration(seconds: 3),
+            //         backgroundColor: ColorSelect.tabcolorBg,
+            //       ));
+            //     }
+            //     // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            //     //   content: Text('Verify Successfully.....',
+            //     //       style: CustomTextStyle.textNormal16Black),
+            //     //   duration: const Duration(seconds: 3),
+            //     //   backgroundColor: ColorSelect.tabcolorBg,
+            //     // ));
+            //   }else{
+            //       Navigator.push(
+            //         context,
+            //         MaterialPageRoute(builder: (context) => const SignUp()),
+            //       );
+            //   }
+            // }
               // else {
               //   Navigator.push(
               //     context,
@@ -314,6 +356,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   _isMobileNumValidated = true;
                 });
               },
+              keyboardType: TextInputType.number,
               controller: _mnumberController,
               decoration: InputDecoration(
                 filled: true,
@@ -414,6 +457,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             style: CustomTextStyle.textNormal16Black,
             textFieldAlignment: MainAxisAlignment.spaceAround,
             fieldStyle: FieldStyle.underline,
+            keyboardType: TextInputType.number,
             otpFieldStyle: OtpFieldStyle(
               focusBorderColor: _isOtpNumValidated
                   ? Colors.green

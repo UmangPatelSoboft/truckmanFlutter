@@ -23,4 +23,6 @@ class TruckManResponse {
 
   Map<String, dynamic> toJson() => _$TruckManResponseToJson(this);
 
+
+
 }

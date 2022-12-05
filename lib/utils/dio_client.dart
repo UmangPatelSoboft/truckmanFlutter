@@ -1,5 +1,8 @@
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:truckman/models/TruckManModel/truckManVerifyOtp.dart';
+import 'package:truckman/models/TruckManModel/truckManVerifyOtpResponse.dart';
 import 'package:truckman/models/TruckManModel/truckman.dart';
 
 import 'package:truckman/models/employee.dart';
@@ -18,6 +21,14 @@ class DioClient {
   )..interceptors.add(Logging());
 
   final Dio _truckManDio = Dio(
+    BaseOptions(
+      baseUrl: 'http://truckmanapi.rushkar.com/api',
+      connectTimeout: 10000,
+      receiveTimeout: 8000,
+    ),
+  )..interceptors.add(Logging());
+
+final Dio _dioVerifyOtp = Dio(
     BaseOptions(
       baseUrl: 'http://truckmanapi.rushkar.com/api',
       connectTimeout: 10000,
@@ -48,7 +59,6 @@ class DioClient {
         print(e.message);
       }
     }
-
     return user;
   }*/
 
@@ -90,6 +100,24 @@ class DioClient {
     return retrievedEmployeeResponse;
   }
 
+  Future<truckManVerifyOtpResponse?> TruckMan_VerifyOtp(truckManVerifyOtp verifyOtp) async {
+    truckManVerifyOtpResponse? retrievedVerifyOtp;
+
+    try {
+      Response response = await _dioVerifyOtp.post(
+        '/truckman/Truckman_VerifyOtp',
+        data: verifyOtp.toJson(),
+      );
+
+      print('User created: ${response.data}');
+
+      retrievedVerifyOtp = truckManVerifyOtpResponse.fromJson(response.data);
+    } catch (e) {
+      print('Error creating user: $e');
+    }
+
+    return retrievedVerifyOtp;
+  }
   Future<TruckManResponse?> TruckMan_SignIn(TruckMan truckmanSignIn) async {
     TruckManResponse? retrievedTruckManResponse;
     try {
@@ -99,23 +127,53 @@ class DioClient {
       );
       print('User created: ${response.data}');
 
+      final apimsg = retrievedTruckManResponse!.message.toString();
+
 
       retrievedTruckManResponse = TruckManResponse.fromJson(response.data);
 
-       // if((response.statusCode ?? 0) >= 200 &&
-       //     (response.statusCode ?? 0) < 300){
-       //   final apiMsg = retrievedTruckManResponse.message;
-       //   Fluttertoast.showToast(
-       //       msg: apiMsg.toString(),
-       //       toastLength: Toast.LENGTH_SHORT,
-       //       gravity: ToastGravity.CENTER,
-       //       timeInSecForIosWeb: 1,
-       //       backgroundColor: Colors.red,
-       //       textColor: Colors.white,
-       //       fontSize: 16.0
-       //   );
-       // }
+      if(response.statusCode == 200){
+          Fluttertoast.showToast(
+              msg: apimsg.toString(),
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+           );
+      }else
+        {
+            Fluttertoast.showToast(
+                msg: apimsg.toString(),
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0
+            );
+        }
     }
+    catch (e) {
+      print('Error creating user: $e');
+    }
+    return retrievedTruckManResponse;
+  }
+      // if((response.statusCode ?? 0) >= 200 &&
+      //     (response.statusCode ?? 0) < 300){
+      //   final apiMsg = retrievedTruckManResponse.message;
+      //   Fluttertoast.showToast(
+      //       msg: apiMsg.toString(),
+      //       toastLength: Toast.LENGTH_SHORT,
+      //       gravity: ToastGravity.CENTER,
+      //       timeInSecForIosWeb: 1,
+      //       backgroundColor: Colors.red,
+      //       textColor: Colors.white,
+      //       fontSize: 16.0
+      //   );
+      // }
+
     // on SocketException {
     //   throw 'No Internet connection';
     // } on DioError catch (e) {
@@ -127,30 +185,47 @@ class DioClient {
     //     case DioErrorType.receiveTimeout:
     //       throw 'Connection timeOut';
     //     case DioErrorType.response:
-    //       throw 'Something went wrong.';
+    //     Fluttertoast.showToast(
+    //       msg: 'Something went wrong',
+    //         toastLength: Toast.LENGTH_SHORT,
+    //         gravity: ToastGravity.CENTER,
+    //         timeInSecForIosWeb: 1,
+    //         backgroundColor: Colors.red,
+    //         textColor: Colors.white,
+    //         fontSize: 16.0,
+    //     );
+    //     break;
     //     case DioErrorType.cancel:
     //       throw 'Request Canceled by user';
     //     case DioErrorType.other:
     //       throw 'Something went wrong.';
     //   }
     // }
-    catch (e) {
-      print('Error creating user: $e');
-    }
-    return retrievedTruckManResponse;
-  }
+
+
   Map<String, dynamic>? handleResponse(retrievedTruckManResponse) {
     try {
       if ((retrievedTruckManResponse.statusCode ?? 0) >= 200 &&
-          (retrievedTruckManResponse.statusCode ?? 0) < 300) {
+          (retrievedTruckManResponse.statusCode ?? 0) < 500) {
         return retrievedTruckManResponse.data;
-      } else {
+      } else if (retrievedTruckManResponse.statusCode == 200){
+        Fluttertoast.showToast(
+          msg: 'Successfully....',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 12.0,
+        );
+      }else{
         throw 'Error occurred while Communication with Server, with StatusCode : ${retrievedTruckManResponse.statusCode}';
       }
     } catch (e) {
       rethrow;
     }
   }
+
 /*Future<UserInfo?> updateUser({
     required UserInfo userInfo,
     required String id,
